@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bootstrap-dataTables</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <style type="text/css">
+        table.dataTable thead th.dt-left,
+        table.dataTable tbody td.dt-left {
+            text-align: left;
+        }
+
+        table.dataTable thead th.dt-center,
+        table.dataTable tbody td.dt-center {
+            text-align: center;
+        }
+
+        table.dataTable thead th.dt-right,
+        table.dataTable tbody td.dt-right {
+            text-align: right;
+        }
+
+        table.dataTable tbody td.dt-nowrap {
+            max-width: 120px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow-x: hidden;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="bs-content" data-content="数据列表">
+        <table id="table" class="table table-bordered table-hover table-condensed" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>用戶ID</th>
+                <th>用户名</th>
+                <th>所属部门</th>
+                <th>出生日期</th>
+                <th>创建日期</th>
+                <th>备注</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+
+    var fnDelete;
+
+    require([
+        'jquery',
+        'bootstrap',
+        'datatables.net',
+        'datatables.net-bs'
+    ], function ($) {
+
+        $.fn.serializeObject = function () {
+            var obj = {};
+            var arr = this.serializeArray();
+            $.each(arr, function () {
+                if (obj[this.name]) {
+                    if (!obj[this.name].push) {
+                        obj[this.name] = [obj[this.name]];
+                    }
+                    obj[this.name].push(this.value || '');
+                } else {
+                    obj[this.name] = this.value || '';
+                }
+            });
+            return obj;
+        };
+
+        $('#table').DataTable({
+            serverSide: true,
+            ajax: {
+                url: 'data/Pagination.json',
+                data: function (data, settings) {
+                    return JSON.stringify({
+                        dtArgs: data,
+                        dto: $('#form').serializeObject()
+                    });
+                },
+                contentType: 'application/json',
+                dataType: 'json',
+                dataSrc: function (result) {
+                    return result.data;
+                }
+            },
+            columns: [
+                {
+                    data: null,
+                    sortable: false,
+                    searchable: false,
+                    width: '5%',
+                    className: 'text-right',
+                    render: function (data, type, row, meta) {
+                        return (meta.row + 1);
+                    }
+                },
+                {data: 'id'},
+                {data: 'username'},
+                {data: 'dept'},
+                {data: 'birthday'},
+                {data: 'createDate'},
+                {data: 'remark', className: 'dt-nowrap'}
+            ],
+            columnDefs: [
+                {
+                    targets: [6],
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr({'data-toggle': 'tooltip', 'title': cellData});
+                    }
+                }
+            ]
+        });
+
+
+    });
+</script>
+</body>
+</html>

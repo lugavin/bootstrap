@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" data-content="IE=edge">
+    <meta name="viewport" data-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>bootstrap-form</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="container-fluid">
+    <form id="form" method="post" class="form-horizontal form-group-sm">
+        <fieldset>
+            <legend>
+                <label class="h4">Bootstrap Form</label>
+                <label class="h4 pull-right"><small>Page-001</small></label>
+            </legend>
+            <div class="form-group">
+                <label class="control-label col-sm-2">編號</label>
+                <div class="col-sm-2">
+                    <label class="control-label">201600001</label>
+                </div>
+                <label class="control-label col-sm-2">狀態</label>
+                <div class="col-sm-2">
+                    <label class="control-label text-success">ACTIVE</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="applyDate">申請日期</label>
+                <div class="col-sm-2">
+                    <input id="applyDate" name="applyDate" type="date" class="form-control"
+                           data-bv-notempty="true">
+                </div>
+                <label class="control-label col-sm-2" for="approvalDate">通過日期</label>
+                <div class="col-sm-2">
+                    <div class="input-group" data-provide="datepicker">
+                        <input id="approvalDate" name="approvalDate" type="text" class="form-control" data-provide="datepicker">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                    </div>
+                </div>
+                <label class="control-label col-sm-2" for="expiryDate">失效日期</label>
+                <div class="col-sm-2">
+                    <input id="expiryDate" name="expiryDate" type="text" class="form-control" data-provide="datetimepicker">
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" href="#collapse1">
+                        <h3 class="panel-title">特徵 <i class="fa fa-arrow"></i></h3>
+                    </a>
+                </div>
+                <div id="collapse1" class="panel-body panel-collapse collapse in">
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="status">狀態</label>
+                        <div class="col-sm-2">
+                            <input id="status" name="status" type="text" class="form-control" placeholder="狀態">
+                        </div>
+                        <label class="control-label col-sm-2" for="remark">備註</label>
+                        <div class="col-sm-6">
+                            <textarea id="remark" name="remark" class="form-control" placeholder="備註"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="btn-group" role="group" aria-label="action">
+            <button type="button" class="btn btn-default btn-sm">日誌</button>
+            <button id="btnSave" type="button" class="btn btn-default btn-sm">保存</button>
+        </div>
+    </form>
+</div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+    require([
+        'jquery',
+        'bootstrap',
+        'bootstrapValidator',
+        'datepicker'
+    ], function ($) {
+
+        $('#form').bootstrapValidator();
+
+        $('#btnSave').click(function () {
+            if (!$('#form').validate()) {
+                return false;
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

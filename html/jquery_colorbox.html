@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" data-content="IE=edge">
+    <meta name="viewport" data-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>jquery-colorbox</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <style>
+        body {
+            font: 12px/1.2 Verdana, sans-serif;
+            padding: 0 10px;
+        }
+
+        a:link, a:visited {
+            text-decoration: none;
+            color: #416CE5;
+            border-bottom: 1px solid #416CE5;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Colorbox Demonstration</h1>
+<h2>Elastic Transition</h2>
+<p><a class="gallery" href="assets/img/gallery/photo1.jpg">Grouped Photo 1</a></p>
+<p><a class="gallery" href="assets/img/gallery/photo2.jpg">Grouped Photo 2</a></p>
+<p><a class="gallery" href="assets/img/gallery/photo3.jpg">Grouped Photo 3</a></p>
+<p><a class="gallery" href="assets/img/gallery/photo4.jpg">Grouped Photo 4</a></p>
+<p><a class="gallery" href="assets/img/gallery/photo5.jpg">Grouped Photo 5</a></p>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+    require([
+        'jquery',
+        'colorbox'
+    ], function ($) {
+        $('.gallery').colorbox({
+            rel: 'gallery',
+            transition: 'elastic'
+        });
+    });
+</script>
+</body>
+</html>

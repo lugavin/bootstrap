@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" data-content="IE=edge">
+    <meta name="viewport" data-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>jquery-fancybox</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="container">
+
+    <h3><a class="fancybox" href="html/bootstrap_gallery.html" data-fancybox-type="iframe">bootstrap gallery</a></h3>
+
+    <h3>jQuery fancyBox</h3>
+    <p>
+        <a class="fancybox-thumb" rel="fancybox-thumb" href="assets/img/gallery/photo1.jpg">
+            <img src="assets/img/gallery/photo1.jpg" class="img-thumbnail" width="15%">
+        </a>
+        <a class="fancybox-thumb" rel="fancybox-thumb" href="assets/img/gallery/photo2.jpg">
+            <img src="assets/img/gallery/photo2.jpg" class="img-thumbnail" width="15%">
+        </a>
+        <a class="fancybox-thumb" rel="fancybox-thumb" href="assets/img/gallery/photo3.jpg">
+            <img src="assets/img/gallery/photo3.jpg" class="img-circle" width="15%">
+        </a>
+        <a class="fancybox-thumb" rel="fancybox-thumb" href="assets/img/gallery/photo4.jpg">
+            <img src="assets/img/gallery/photo4.jpg" class="img-rounded" width="15%">
+        </a>
+        <a class="fancybox-thumb" rel="fancybox-thumb" href="assets/img/gallery/photo5.jpg">
+            <img src="assets/img/gallery/photo5.jpg" class="img-rounded" width="15%">
+        </a>
+    </p>
+
+    <h3>fancybox iframe</h3>
+
+    <p><a class="various" data-fancybox-type="iframe" href="html/bootstrap_dataTables.html">Fancybox iFrame</a></p>
+    <p><a class="various fancybox.ajax" data-fancybox-type="ajax" href="html/bootstrap_welcome.html">Fancybox Ajax</a></p>
+    <p><a class="various" href="#inline">Fancybox Inline</a></p>
+    <p><a class="various" href="assets/img/photo6.jpg">Non-existing url</a></p>
+
+    <div id="inline" style="display:none; width:500px;">
+        <h2>Lorem ipsum dolor sit amet</h2>
+        <p><a href="javascript:$.fancybox.close();">Close</a></p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    </div>
+
+</div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+    require([
+        'jquery',
+        'fancybox'
+    ], function ($) {
+
+        $('.fancybox').fancybox({
+            prevEffect: 'none',
+            nextEffect: 'none',
+            closeBtn: false,
+            helpers: {
+                overlay: {closeClick: true}
+            }
+        });
+
+        $('.fancybox-thumb').fancybox({
+            prevEffect: 'none',
+            nextEffect: 'none',
+            closeBtn: false,
+            helpers: {
+                overlay: {closeClick: true},
+                title: {type: 'outside'},
+                thumbs: {width: 50, height: 50}
+            }
+        });
+
+        $('.various').fancybox({
+            width: '100%',
+            height: '100%',
+            autoSize: false,
+            fitToView: false,
+            openEffect: 'none',
+            closeEffect: 'none',
+            afterLoad: $.noop(),
+            afterClose: function () {
+                console.info('This windows has closed!');
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bootstrap-dataTables-extensions</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <style type="text/css">
+        table.dataTable thead th.dt-left,
+        table.dataTable tbody td.dt-left {
+            text-align: left;
+        }
+
+        table.dataTable thead th.dt-center,
+        table.dataTable tbody td.dt-center {
+            text-align: center;
+        }
+
+        table.dataTable thead th.dt-right,
+        table.dataTable tbody td.dt-right {
+            text-align: right;
+        }
+
+        table.dataTable tbody td.dt-nowrap {
+            max-width: 120px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow-x: hidden;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <form id="form" action="#" method="post" class="form-horizontal form-group-sm" role="form">
+        <fieldset class="bs-content" data-content="查询条件">
+            <div class="form-group">
+                <label class="control-label col-sm-1" for="userid">用户ID：</label>
+                <div class="col-sm-2">
+                    <input id="userid" name="userid" type="text" class="form-control" placeholder="用户ID">
+                </div>
+                <label class="control-label col-sm-1" for="username">用户名：</label>
+                <div class="col-sm-2">
+                    <input id="username" name="username" type="text" class="form-control" placeholder="用户名">
+                </div>
+                <label class="control-label col-sm-1" for="idCard">证件号：</label>
+                <div class="col-sm-2">
+                    <input id="idCard" name="idCard" type="text" class="form-control" placeholder="证件号">
+                </div>
+                <div class="col-sm-3">
+                    <!-- 一定要指明type属性的值(否则可能向服务端发送两次请求) -->
+                    <button id="btnQuery" type="button" class="btn btn-primary btn-sm">
+                        <i class="glyphicon glyphicon-search"></i> 查询
+                    </button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+    <div class="bs-content" data-content="数据列表">
+        <table id="table" class="table table-bordered table-hover table-condensed" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>用戶ID</th>
+                    <th>用户名</th>
+                    <th>所属部门</th>
+                    <th>出生日期</th>
+                    <th>创建日期</th>
+                    <th>备注</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<script id="template" type="text/html">
+    <div class="dropdown">
+        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            詳細 <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu pull-right" role="menu">
+            <li><a href="javascript:void(0)">查看</a></li>
+            <li><a href="javascript:void(0)" onclick="fnUpdate('{id}')">更新</a></li>
+            <li><a href="javascript:void(0)" onclick="fnDelete('{id}')">删除</a></li>
+            <li><a href="javascript:void(0)">日誌</a></li>
+        </ul>
+    </div>
+</script>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+
+    require([
+        'jquery',
+        'bootstrap',
+        'datatables.net',
+        'datatables.net-bs',
+        'datatables.net-buttons',
+        'datatables.net-buttons-bs',
+        'datatables.net-buttons-colVis',
+        'datatables.net-select'
+    ], function ($) {
+
+        $.extend($.fn.dataTable.ext.buttons, {
+            reload: {
+                text: 'Reload',
+                action: function (e, dt, node, config) {
+                    dt.ajax.reload();
+                }
+            }
+        });
+
+        var $table = $('#table').DataTable({
+            lengthChange: false,
+            ordering: false,
+            rowId: 'id',
+            select: {
+                style: 'multi'
+            },
+            buttons: [
+                {
+                    text: '<i class="fa fa-edit"></i>',
+                    name: 'editButton',
+                    className: 'editButton',
+                    enabled: false,
+                    titleAttr: 'Click Edit',
+                    action: function () {
+                        var id = $table.row({selected: true}).id();
+                        console.info(id);
+                    }
+                },
+                {
+                    text: '<i class="fa fa-trash"></i>',
+                    name: 'deleteButton',
+                    className: 'deleteButton',
+                    enabled: false,
+                    titleAttr: 'Click Delete',
+                    action: function () {
+                        var data = {};
+                        var rows = $table.rows({selected: true}).data();
+                        for (var i = 0; i < rows.length; i++) {
+                            data['ids[' + i + ']'] = rows[i].id;
+                        }
+                        var json = JSON.stringify(data);
+                        console.info('JSON.stringify(value) => resultType: ' + typeof(json) + ', resultValue: ' + json);
+                        var obj = $.parseJSON(json);
+                        console.info('$.parseJSON(json) => resultType: ' + typeof(obj) + ', resultValue: ' + obj);
+                        var param = {};
+                        var ids = $table.rows({selected: true}).ids();
+                        $.each(ids, function (index, id) {
+                            param['ids[' + index + ']'] = id;
+                        });
+                        var str = $.param(param);
+                        console.info('$.param(obj) => resultType: ' + typeof(str) + ', resultValue: ' + str);
+                    }
+                },
+                {
+                    extend: 'reload',
+                    text: '<i class="fa fa-refresh"></i>',
+                    name: 'reloadButton',
+                    className: 'reloadButton',
+                    titleAttr: 'Click Refresh'
+                },
+                {
+                    extend: 'colvis',
+                    text: '<i class="fa fa-columns"></i>',
+                    name: 'colvisButton',
+                    className: 'colvisButton',
+                    titleAttr: 'Click Hidden Column'
+                }
+            ],
+            fnInitComplete: function (settings, json) {
+                $table.buttons().container().appendTo($('.col-sm-6:eq(0)', $table.table().container()));
+                $table.buttons().nodes().attr({
+                    'data-toggle': 'tooltip'
+                }).bind('click', function (e) {
+                    console.info($(this).data('original-title'));
+                });
+            },
+            ajax: {
+                url: 'data/DataTable.json',
+                data: function () {
+                    $('#form').serialize();
+                },
+                dataSrc: function (result) {
+                    return result.data;
+                }
+            },
+            columns: [
+                {
+                    data: 'index',
+                    className: 'text-center',
+                    render: function (data, type, row, meta) {
+                        return (meta.row + 1);
+                    }
+                },
+                {'data': 'id'},
+                {'data': 'username'},
+                {'data': 'dept'},
+                {'data': 'birthday'},
+                {data: 'createDate'},
+                {
+                    data: 'remark',
+                    className: 'dt-nowrap'
+                },
+                {
+                    data: null,
+                    width: '10%',
+                    render: function (data, type, row, meta) {
+                        return Base.formatObject($('#template').html(), data);
+                    }
+                }
+            ],
+            columnDefs: [
+                {
+                    targets: [6],
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr({'data-toggle': 'tooltip', 'title': cellData});
+                    }
+                },
+                {
+                    targets: [-1],
+                    visible: false
+                }
+            ]
+        });
+
+        $table.on('click', 'tbody tr', function () {
+            var len = $table.rows({selected: true}).data().length;
+            $table.button('.editButton').enable(len === 1);
+            $table.buttons(['.deleteButton']).enable(len !== 0);
+        });
+
+        $('#btnQuery').click(function () {
+            $table.ajax.reload(function () {
+                console.info('加载完毕...');
+            });
+        });
+
+
+    });
+</script>
+</body>
+</html>

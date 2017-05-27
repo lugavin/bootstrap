@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" data-content="IE=edge">
+    <meta name="viewport" data-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>jquery-ztree-awesome</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <ul id="tree" class="ztree"></ul>
+        </div>
+    </div>
+</div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+    require([
+        'jquery',
+        'ztree'
+    ], function ($) {
+        var setting = {
+            view: {
+                showIcon: true,
+                showLine: true,
+                selectedMulti: false,
+                dblClickExpand: false
+            },
+            async: {
+                enable: true,
+                type: 'GET',
+                url: 'data/Menu.json',
+                dataFilter: function (treeId, parentNode, result) {
+                    return result.data;
+                }
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: 'id',
+                    pIdKey: 'parentId',
+                    rootPid: null
+                }
+            },
+            callback: {
+                onNodeCreated: this.onNodeCreated,
+                beforeClick: this.beforeClick,
+                onAsyncSuccess: function (e, treeId, treeNode, msg) {
+                    // var zTree = $.fn.zTree.getZTreeObj(treeId);
+                    // console.time('zTree');
+                    zTree.expandNode(zTree.getNodes()[0], true, true, true);
+                    // console.timeEnd('zTree');
+                },
+                onClick: function (e, treeId, node) {
+                    e.preventDefault();
+                    if (node && node.url) {
+                        // $('#iframe').attr('src', node.url).load();
+                    }
+                }
+            }
+        };
+
+        var zTree = $.fn.zTree.init($('#tree'), setting);
+    });
+</script>
+</body>
+</html>

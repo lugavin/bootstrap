@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" data-content="IE=edge">
+    <meta name="viewport" data-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>bootstrap-modal</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="container-fluid">
+    <form id="form" action="#" method="post" class="form-horizontal form-group-sm">
+        <fieldset>
+            <legend>
+                <label class="h4">Bootstrap Modal</label>
+                <label class="h4 pull-right"><small>Bootstrap-Modal-001</small></label>
+            </legend>
+            <div class="form-group">
+                <label class="control-label col-sm-1" for="id">用户ID：</label>
+                <div class="col-sm-3">
+                    <input id="id" name="id" type="text" class="form-control" placeholder="用户ID">
+                </div>
+                <label class="control-label col-sm-1" for="idCard">证件号：</label>
+                <div class="col-sm-3">
+                    <input id="idCard" name="idCard" type="text" class="form-control" placeholder="证件号">
+                </div>
+                <label class="control-label col-sm-1" for="birthdayStart">出生日期：</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input id="birthdayStart" name="birthdayStart" type="text" class="input-sm form-control" data-provide="datepicker">
+                        <span class="input-group-addon"><i class="fa fa-exchange"></i></span>
+                        <input id="birthdayEnd" name="birthdayEnd" type="text" class="input-sm form-control" data-provide="datepicker">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-1" for="username">用户名：</label>
+                <div class="col-sm-3">
+                    <input id="username" name="username" type="text" class="form-control" placeholder="用户名">
+                </div>
+                <label class="control-label col-sm-1" for="dept">所属部门：</label>
+                <div class="col-sm-3">
+                    <select id="dept" name="dept" data-tags="false" class="form-control"></select>
+                </div>
+                <label class="control-label col-sm-1" for="createStartDate">创建日期：</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input id="createStartDate" name="createStartDate" type="text" class="input-sm form-control" data-provide="datepicker">
+                        <span class="input-group-addon"><i class="fa fa-exchange"></i></span>
+                        <input id="createEndDate" name="createEndDate" type="text" class="input-sm form-control" data-provide="datepicker">
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="text-center">
+            <!-- 一定要指明type属性的值(否则可能向服务端发送两次请求) -->
+            <button id="btnQuery" type="button" class="btn btn-primary btn-sm">
+                <i class="glyphicon glyphicon-search"></i> 查询
+            </button>
+            <button id="btnReset" type="reset" class="btn btn-default btn-sm">
+                <i class="glyphicon glyphicon-refresh"></i> 重置
+            </button>
+        </div>
+    </form>
+    <hr>
+    <table id="table" class="table table-bordered table-striped table-hover table-condensed" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+            <th>用戶ID</th>
+            <th>用户名</th>
+            <th>所属部门</th>
+            <th>出生日期</th>
+            <th>创建日期</th>
+            <th width="10%">操作</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<template id="template">
+    <div class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-spinner fa-spin fa-lg"></i> Loading.....</h4>
+                </div>
+                <div class="modal-body">
+                    <h5>Loading...</h5>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped active" style="width: 100%"></div>
+                    </div>
+                    <iframe class="embed-responsive-item" frameborder="0" src="" style="width:100%;height:75vh;display:block;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script id="actionTemplate" type="text/x-handlebars-template">
+    <div class="dropdown">
+        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            詳細 <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu pull-right" role="menu">
+            <li><a href="javascript:void(0)">查看</a></li>
+            <li><a href="javascript:void(0)" onclick="fnUpdate('{{dept}}')">更新</a></li>
+            <li><a href="javascript:void(0)" onclick="fnDelete('{{dept}}')">删除</a></li>
+            <li><a href="javascript:void(0)">日誌</a></li>
+        </ul>
+    </div>
+</script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+
+    var fnUpdate;
+    var fnDelete;
+
+    require([
+        'jquery',
+        'handlebars',
+        'bootstrap',
+        'datatables.net',
+        'datatables.net-bs',
+        'datepicker',
+        'select2',
+        'noty'
+    ], function ($, Handlebars) {
+
+        var actionTemplate = Handlebars.compile($('#actionTemplate').html());
+
+        var $table = $('#table').DataTable({
+            columns: [
+                {'data': 'id'},
+                {'data': 'username'},
+                {'data': 'dept'},
+                {'data': 'birthday'},
+                {'data': 'createDate'},
+                {
+                    data: null,
+                    sortable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        return actionTemplate(data);
+                    }
+                }
+            ]
+        });
+
+        $('#dept').select2Remote({
+            url: 'data/Select2.json'
+        });
+
+        $('#btnQuery').click(function () {
+            $.ajax({
+                url: 'data/DataTable.json',
+                data: $('#form').serialize(),
+                dataType: 'json',
+                beforeSend: function () {
+                    return true;
+                },
+                success: function (result) {
+                    if ($table.data().length > 0) {
+                        $table.clear().draw();
+                    }
+                    $table.rows.add(result.data).draw();
+                }
+            });
+        });
+
+        fnUpdate = function (id) {
+            $($('#template').html()).clone(true).insertBefore('#template').modal({
+                show: true
+            }).on('hidden.bs.modal', function () {
+                $(this).remove();
+            }).find('iframe').attr({
+                src: 'html/bootstrap_plugins.html?id=' + id
+            }).load(function () {
+                $(this).siblings().fadeOut('slow', function () {
+                    $(this).remove();
+                });
+            });
+        };
+
+        fnDelete = function (id) {
+            $.confirm('确认删除吗？', function (yes) {
+                if (yes) {
+                    $.message('id=' + id + ' 的记录已被成功删除！', true);
+                } else {
+                    $.message('操作已取消！', false);
+                }
+            });
+        };
+
+    });
+</script>
+</body>
+</html>

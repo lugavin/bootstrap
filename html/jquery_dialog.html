@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dialog</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        /*========== Modal Begin ==========*/
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1040;
+            background-color: #000;
+        }
+
+        .modal-backdrop.fade {
+            filter: alpha(opacity=0);
+            opacity: 0;
+        }
+
+        .modal-backdrop.in {
+            filter: alpha(opacity=50);
+            opacity: 0.5;
+        }
+
+        /*========== Modal End ==========*/
+
+        /*========== Dialog Begin ==========*/
+
+        .modal {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1050;
+            /*display: none;*/
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
+            outline: 0;
+        }
+
+        .modal > .modal-dialog {
+            position: relative;
+            width: 600px;
+            margin: 30px auto;
+        }
+
+        .modal > .modal-dialog > .modal-content {
+            position: relative;
+            background-color: #fff;
+            -webkit-background-clip: padding-box;
+            background-clip: padding-box;
+            border: 1px solid #999;
+            border-radius: 3px;
+            outline: 0;
+            -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+            box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+        }
+
+        .modal > .modal-dialog > .modal-content > .modal-header {
+            min-height: 16px;
+            padding: 15px;
+            border-bottom: 1px solid #e5e5e5;
+            color: #fff;
+            background-color: #337ab7;
+        }
+
+        .modal > .modal-dialog > .modal-content > .modal-body {
+            position: relative;
+            padding: 15px;
+        }
+
+        .modal > .modal-dialog > .modal-content > .modal-footer {
+            padding: 15px;
+            text-align: right;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .modal > .modal-dialog > .modal-content > .modal-footer .btn + .btn {
+            margin-bottom: 0;
+            margin-left: 10px;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            line-height: 1.5;
+            border-radius: 3px;
+            border: 1px solid transparent;
+        }
+
+        .btn-default {
+            color: #333;
+            background-color: #fff;
+            border-color: #ccc;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color: #337ab7;
+            border-color: #2e6da4;
+        }
+
+        /*========== Dialog End ==========*/
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button id="btnAlert" class="btn btn-default">Alert</button>
+    <button id="btnConfirm" class="btn btn-primary">Confirm</button>
+</div>
+
+<template id="template">
+    <div class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">提示</div>
+                <div class="modal-body">提示消息</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default">取消</button>
+                    <button type="button" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script type="text/javascript">
+    require([
+        'jquery'
+    ], function ($) {
+
+        var _methods = {
+            _createIndex: function () {
+                var index = 'dialog_' + (new Date().getTime() * Math.floor(Math.random() * 1000000));
+                return $('#' + index).length > 0 ? _methods._createIndex() : index;
+            },
+            _createMask: function () {
+                return $('<div>').addClass('modal-backdrop fade in');
+            },
+            _createDialog: function (title, message, buttons) {
+                var $modal = $('<div>').addClass('modal');
+                var $dialog = $('<div>').addClass('modal-dialog');
+                var $content = $('<div>').addClass('modal-content');
+                var header = $('<div>').addClass('modal-header').text(title);
+                var body = $('<div>').addClass('modal-body').text(message);
+                var $footer = $('<div>').addClass('modal-footer');
+                if (Array.isArray(buttons)) {
+                    $.each(buttons, function (idx, button) {
+                        $footer.append(button);
+                    });
+                }
+                return $modal.append($dialog.append($content.append(header).append(body).append($footer)));
+            }
+        };
+
+        $.extend({
+            alert: function (msg, type, callback) {
+                // arguments并不是真正意义上的Javascript数组, 所以需要使用Array.prototype.slice.call(arguments)方法将其转换成数组
+                var args = Array.prototype.slice.call(arguments);
+                // 移除数组中的第一个元素并返回该元素
+                msg = args.shift();
+                // 移除数组中的最后一个元素并返回该元素
+                if (typeof args[args.length - 1] === 'function') {
+                    callback = args.pop();
+                }
+                // 如果args中仍有元素, 那就是可选参数, 使用以下方法逐个取出
+                // args.length > 0 ? optionalA = args.shift() : optionalA = null;
+                // args.length > 0 ? optionalB = args.shift() : optionalB = null;
+                type = args.length > 0 ? args.shift() : null;
+                // 正常处理
+                var title = '提示';
+                switch (type) {
+                    case 'success':
+                        title = '成功提示';
+                        break;
+                    case 'error':
+                        title = '失败提示';
+                        break;
+                    case 'warn':
+                        title = '警告';
+                        break;
+                    case 'question':
+                        title = '确认';
+                        break;
+                    default:
+                        break;
+                }
+                var $mask = _methods._createMask().appendTo('body');
+                var $btn = $('<button>').attr({type: 'button'}).addClass('btn btn-primary').bind('click', function (event) {
+                    $mask.remove();
+                    $dialog.remove();
+                    if (typeof callback === 'function') {
+                        callback(event);
+                    }
+                }).text('确定');
+                var $dialog = _methods._createDialog(title, msg, [$btn]).appendTo('body').fadeIn('slow');
+                return $dialog;
+            },
+            confirm: function (msg, callback) {
+                var title = '确认提示';
+                var $mask = _methods._createMask().appendTo('body');
+                var $btnCancel = $('<button>').attr({type: 'button'}).addClass('btn btn-default').bind('click', function () {
+                    $mask.remove();
+                    $dialog.remove();
+                    if (typeof callback === 'function') {
+                        callback(false);
+                    }
+                }).text('取消');
+                var $btnOk = $('<button>').attr({type: 'button'}).addClass('btn btn-primary').bind('click', function () {
+                    $mask.remove();
+                    $dialog.remove();
+                    if (typeof callback === 'function') {
+                        callback(true);
+                    }
+                }).text('确定');
+                var $dialog = _methods._createDialog(title, msg, [$btnCancel, $btnOk]).appendTo('body').fadeIn('slow');
+                return $dialog;
+            }
+        });
+
+        $('#btnAlert').click(function () {
+            $.alert('提示消息', function () {
+                console.info('回调函数被执行...');
+            });
+        });
+
+        $('#btnConfirm').click(function () {
+            $.confirm('确定删除吗？', function (yes) {
+                console.info(yes);
+            });
+        });
+
+    });
+</script>
+
+</body>
+</html>

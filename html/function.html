@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>JS高级特性</title>
+</head>
+<body>
+<div class="container">
+
+</div>
+<script type="text/javascript">
+
+    /**
+     * 闭包
+     * 范式: (function(实参) {})(形参); 匿名函数创建闭包
+     */
+
+    /**
+     * 方式一: 普通函数
+     */
+    var print1 = function (str) {
+        console.info(str);
+    };
+    print1("function1 --> Hello JS!");
+
+    /**
+     * 方式二: 自执行函数
+     */
+    var print2 = function (str) {
+        console.info(str);
+    }("function2 --> Hello JS!");
+
+    /**
+     * 方式三: 匿名函数
+     * 定义方式: (function() {})();
+     */
+    (function (str) {
+        console.info(str);
+    })("function3 --> Hello JS!");
+
+    /**
+     * 匿名函数应用
+     */
+    (function (window, undefined) {
+
+        'use strict';
+
+        var Base = {};
+
+        Base.version = '1.0';
+        Base.locale = navigator.language || navigator.userLanguage;
+
+        Base.format = function () {
+            if (arguments.length == 0) {
+                return null;
+            }
+            var str = arguments[0];
+            for (var i = 1; i < arguments.length; i++) {
+                str = str.replace(new RegExp('\\{' + (i - 1) + '\\}', 'gm'), arguments[i]);
+            }
+            return str;
+        };
+
+        Base.formatObject = function (str, obj) {
+            /**
+             * \s 匹配任何空白字符
+             * /g 直接量语法(/regexp/g) 用于执行全局匹配
+             */
+            return str.replace(/\{\s*([^}\s]+)\s*\}/g, function (match, p1, offset, string) {
+                return obj[p1]
+            });
+        };
+
+        if (typeof window === 'object' && typeof window.document === 'object') {
+            window.Base = Base;
+        }
+
+    })(window);
+
+    console.info('Base.format --> ', Base.format('Hello {0}!', 'JS'));
+    console.info('Base.formatObject --> ', Base.formatObject('Hello {name}!', {name: 'JS'}));
+
+    (function (window, undefined) {
+
+        'use strict';
+
+        String.prototype.format = function () {
+            var args = arguments;
+            return this.replace(/\{(\d+)\}/g, function (match, p1, offset, string) {
+                return args[p1];
+            });
+        };
+
+    })(window);
+
+    console.info('String.prototype.format --> ', 'Hello {0}!'.format('JS'));
+
+</script>
+</body>
+</html>

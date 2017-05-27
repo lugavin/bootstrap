@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>RequireJS</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <style type="text/css">
+        .page-header {
+            display: block;
+            width: 100%;
+            font-size: 21px;
+            line-height: inherit;
+            color: #333;
+            border: 0;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 0;
+            margin: 0 0 12px;
+        }
+    </style>
+</head>
+<body>
+<div id="page-wrapper" class="container-fluid">
+    <div class="page-header">
+        <label class="h4">jquery event</label>
+    </div>
+    <div id="page-content">
+        <button id="btnSave" type="button" class="btn btn-primary btn-sm">Save</button>
+    </div>
+</div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script type="text/javascript">
+    require([
+        'jquery'
+    ], function ($) {
+        /**
+         * jquery自定义事件的步骤：
+         * (1)unbind
+         * (2)bind
+         * (3)trigger
+         */
+        $('#btnSave').click(function () {
+            $(this).trigger('processing', {name: 'King'});
+        }).unbind('processing').bind('processing', function (event, data) {
+            console.info(data);
+            var $this = $(this);
+            $this.attr({disabled: 'disabled'});
+            window.setTimeout(function () {
+                $this.removeAttr('disabled');
+            }, 5000);
+        });
+    });
+</script>
+</body>
+</html>

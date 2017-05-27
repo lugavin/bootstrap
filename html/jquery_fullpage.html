@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>jquery-fullPage</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <style type="text/css">
+        #fp-nav ul li a span,
+        .fp-slidesNav ul li a span {
+            width: 8px;
+            height: 8px;
+            margin: -4px 0 0 -4px;
+            border-radius: 14px;
+            background: #333;
+        }
+
+        #fp-nav ul li a.active span,
+        .fp-slidesNav ul li a.active span,
+        #fp-nav ul li:hover a.active span,
+        .fp-slidesNav ul li:hover a.active span {
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            border: 4px solid #e2e2e2;
+            box-sizing: border-box;
+            background: #444;
+        }
+    </style>
+    <style type="text/css">
+        .section {
+            text-align: center;
+            font: 50px "Microsoft Yahei";
+            color: #fff;
+        }
+
+        #section1 p {
+            display: none;
+        }
+
+        #section2 p {
+            position: relative;
+            left: -120%;
+        }
+
+        #section3 p {
+            position: relative;
+            bottom: -120%;
+        }
+
+        #section4 p {
+            display: none;
+        }
+
+        #section1 {
+            background-image: url(assets/img/gallery/bg1.jpg);
+            background-size: 100%;
+        }
+
+        #section2 {
+            background-image: url(assets/img/gallery/bg2.jpg);
+            background-size: 100%;
+        }
+
+        #section3 {
+            background-image: url(assets/img/gallery/bg3.jpg);
+            background-size: 100%;
+        }
+
+        #section4 {
+            background-image: url(assets/img/gallery/bg4.jpg);
+            background-size: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="fullpage">
+    <div id="section1" class="section">
+        <p>jquery fullpage 回调函数</p>
+    </div>
+    <div id="section2" class="section">
+        <p>jquery fullpage 回调函数</p>
+    </div>
+    <div id="section3" class="section">
+        <p>jquery fullpage 回调函数</p>
+    </div>
+    <div id="section4" class="section">
+        <p>jquery fullpage 回调函数</p>
+    </div>
+</div>
+<script src="assets/js/lib/jquery/jquery.js"></script>
+<script src="assets/js/lib/jquery-fullpage/jquery.fullpage.js"></script>
+<script src="assets/js/lib/jquery-easing/jquery.easing.js"></script>
+<script>
+    $(function () {
+        $('#fullpage').fullpage({
+            navigation: true,
+            afterLoad: function (anchorLink, index) {
+                if (index == 1) {
+                    $(this).find('p').fadeIn(2000);
+                }
+                if (index == 2) {
+                    $(this).find('p').delay(500).animate({
+                        left: '0'
+                    }, 1500, 'easeOutExpo');
+                }
+                if (index == 3) {
+                    $(this).find('p').delay(500).animate({
+                        bottom: '0'
+                    }, 1500, 'easeOutExpo');
+                }
+                if (index == 4) {
+                    $(this).find('p').fadeIn(2000);
+                }
+            },
+            onLeave: function (index, direction) {
+                if (index == 1) {
+                    $(this).find('p').fadeOut(2000);
+                }
+                if (index == '2') {
+                    $(this).find('p').delay(500).animate({
+                        left: '-120%'
+                    }, 1500, 'easeOutExpo');
+                }
+                if (index == '3') {
+                    $(this).find('p').delay(500).animate({
+                        bottom: '-120%'
+                    }, 1500, 'easeOutExpo');
+                }
+                if (index == '4') {
+                    $(this).find('p').fadeOut(2000);
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

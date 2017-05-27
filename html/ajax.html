@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>RequireJS</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <style type="text/css">
+        .page-header {
+            display: block;
+            width: 100%;
+            font-size: 21px;
+            line-height: inherit;
+            color: #333;
+            border: 0;
+            border-bottom: 1px solid #e5e5e5;
+            padding: 0;
+            margin: 0 0 12px;
+        }
+    </style>
+</head>
+<body>
+<div id="page-wrapper" class="container-fluid">
+    <div class="page-header">
+        <label class="h4">Ajax</label>
+    </div>
+    <div id="page-content">
+        <button id="btnSave" type="button" class="btn btn-primary btn-sm">Save</button>
+    </div>
+</div>
+<script src="assets/js/app.js"></script>
+<script type="text/javascript">
+    window.onload = function () {
+        document.getElementById('btnSave').onclick = function () {
+            Base.ajax({
+                url: 'data/Pagination.json',
+                data: {
+                    id: 101,
+                    name: 'King'
+                },
+                method: 'GET',
+                success: function (result) {
+                    console.info(result);
+                }
+            });
+        };
+    };
+</script>
+</body>
+</html>

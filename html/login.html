@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>login</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <style type="text/css">
+        body {
+            margin: 0;
+            height: 100vh;
+            /*background: url('assets/img/gallery/bg.jpg') no-repeat 50% 50%;*/
+            background-color: #f8f8f8;
+            background-size: cover;
+        }
+
+        #captcha {
+            width: 50%;
+            display: inline;
+        }
+
+        #captchaImg {
+            width: 100px;
+            height: 34px;
+            z-index: 9;
+            cursor: pointer;
+        }
+    </style>
+    <script type="text/javascript">
+        // 解决session过期跳转到登陆页面并跳出iframe框架的问题
+        if (top != window.self) {
+            top.location.href = location.href;
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="panel panel-default" style="margin-top: 35%">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Please Sign In</h3>
+                </div>
+                <div class="panel-body">
+                    <form id="form" method="post" role="form">
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="control-label sr-only" for="username">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                    <input id="username" name="username" value="admin" type="text" class="form-control" autofocus="autofocus" placeholder="Username"
+                                           data-bv-notempty="true"
+                                           data-bv-stringlength="true"
+                                           data-bv-stringlength-min="5"
+                                           data-bv-stringlength-max="10"
+                                           data-bv-regexp="true"
+                                           data-bv-regexp-regexp="[a-zA-Z0-9_]+"
+                                           data-bv-remote="false"
+                                           data-bv-remote-url="data/FormValidation.json">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label sr-only" for="password">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                    <input id="password" name="password" value="admin" type="password" class="form-control" placeholder="Password"
+                                           data-bv-notempty="true">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label sr-only" for="captcha">Captcha</label>
+                                <input id="captcha" name="captcha" type="text" value="0678" class="form-control" placeholder="Captcha" data-bv-notempty="true">
+                                <img id="captchaImg" src="assets/img/captcha.jpg" alt="kaptcha.jpg"
+                                     data-toggle="tooltip" title="Refresh Captcha">
+                            </div>
+                            <div class="checkbox">
+                                <label><input name="rememberMe" type="checkbox">Remember Me</label>
+                            </div>
+                            <button id="btnSubmit" type="button" class="btn btn-success btn-block">Sign In</button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+    require([
+        'jquery',
+        'bootstrap',
+        'bootstrapValidator'
+    ], function ($) {
+
+        $('#form').bootstrapValidator({
+            fields: {
+                captcha: {
+                    validators: {
+                        notEmpty: {},
+                        callback: {
+                            message: 'The verification code is incorrect.',
+                            callback: function (value, validator) {
+                                return /^[0-9]{4}$/.test(value);
+                            }
+                        },
+                        remote: {
+                            message: 'The verification code is incorrect.',
+                            url: 'data/FormValidation.json'
+                        }
+                    }
+                }
+            }
+        });
+
+        $('#captchaImg').click(function () {
+            $(this).attr('src', 'assets/img/captcha.jpg?' + Math.random()).fadeIn();
+        });
+
+        $('#btnSubmit').click(function () {
+            location.href = 'index.html';
+        });
+
+    });
+</script>
+</body>
+</html>

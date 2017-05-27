@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>NProgress</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+    require([
+        'jquery',
+        'nprogress'
+    ], function ($, NProgress) {
+        NProgress.start();
+        // NProgress.set(0.4);
+        setTimeout(function () {
+            NProgress.done();
+            // $('.fade').removeClass('out');
+        }, 1000);
+    });
+</script>
+</body>
+</html>

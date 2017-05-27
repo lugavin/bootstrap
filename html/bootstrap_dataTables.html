@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bootstrap-dataTables</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <style type="text/css">
+        table.dataTable thead th.dt-left,
+        table.dataTable tbody td.dt-left {
+            text-align: left;
+        }
+
+        table.dataTable thead th.dt-center,
+        table.dataTable tbody td.dt-center {
+            text-align: center;
+        }
+
+        table.dataTable thead th.dt-right,
+        table.dataTable tbody td.dt-right {
+            text-align: right;
+        }
+
+        table.dataTable tbody td.dt-nowrap {
+            max-width: 120px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow-x: hidden;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <form id="form" action="#" method="post" class="form-horizontal form-group-sm" role="form">
+        <fieldset>
+            <legend>
+                <label class="h4">用户信息查询</label>
+                <label class="h4 pull-right">
+                    <small>ssm-tmpl-001</small>
+                </label>
+            </legend>
+            <div class="form-group">
+                <label class="control-label col-sm-1" for="userid">用户ID</label>
+                <div class="col-sm-3">
+                    <input id="userid" name="userid" type="text" class="form-control" placeholder="用户ID"
+                           data-provide="typeahead">
+                </div>
+                <label class="control-label col-sm-1" for="dept">部门</label>
+                <div class="col-sm-3">
+                    <select id="dept" name="dept" class="form-control"></select>
+                </div>
+                <label class="control-label col-sm-1" for="birthdayStart">出生日期</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input id="birthdayStart" name="birthdayStart" type="text" class="input-sm form-control"
+                               data-provide="datepicker" placeholder="开始日期">
+                        <span class="input-group-addon"><i class="fa fa-exchange"></i></span>
+                        <input id="birthdayEnd" name="birthdayEnd" type="text" class="input-sm form-control"
+                               data-provide="datepicker" placeholder="结束日期">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-1" for="username">用户名</label>
+                <div class="col-sm-3">
+                    <input id="username" name="username" type="text" class="form-control" readonly="readonly"
+                           placeholder="用户名">
+                </div>
+                <label class="control-label col-sm-1" for="deptId">部门编号</label>
+                <div class="col-sm-3">
+                    <input id="deptId" name="deptId" type="number" class="form-control required" placeholder="部门编号"
+                           max="99" data-bv-trigger="change keyup">
+                </div>
+                <label class="control-label col-sm-1" for="createStartDate">创建日期</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input id="createStartDate" name="createStartDate" type="text" class="input-sm form-control"
+                               data-provide="datepicker" placeholder="开始日期">
+                        <span class="input-group-addon"><i class="fa fa-exchange"></i></span>
+                        <input id="createEndDate" name="createEndDate" type="text" class="input-sm form-control"
+                               data-provide="datepicker" placeholder="结束日期">
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="text-center">
+            <!-- 一定要指明type属性的值(否则可能向服务端发送两次请求) -->
+            <button id="btnQuery" type="button" class="btn btn-primary btn-sm">
+                <i class="glyphicon glyphicon-search"></i> 查询
+            </button>
+            <button id="btnReset" type="reset" class="btn btn-default btn-sm">
+                <i class="glyphicon glyphicon-refresh"></i> 重置
+            </button>
+        </div>
+    </form>
+    <div class="bs-content" data-content="数据列表">
+        <table id="table" class="table table-bordered table-hover table-condensed" cellspacing="0"
+               width="100%">
+            <thead>
+            <tr>
+                <th width="5%"><input id="checkAll" type="checkbox"></th>
+                <th>序号</th>
+                <th>用戶ID</th>
+                <th>用户名</th>
+                <th>所属部门</th>
+                <th>出生日期</th>
+                <th>创建日期</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<script id="template" type="text/html">
+    <div class="dropdown">
+        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            詳細 <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu pull-right" role="menu">
+            <li><a href="javascript:void(0)">查看</a></li>
+            <li><a href="javascript:void(0)" onclick="fnUpdate('{id}')">更新</a></li>
+            <li><a href="javascript:void(0)" onclick="fnDelete('{id}')">删除</a></li>
+            <li><a href="javascript:void(0)">日誌</a></li>
+        </ul>
+    </div>
+</script>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<!--<script src="assets/js/require.js" data-main="main"></script>-->
+<script>
+
+    var fnDelete;
+
+    require([
+        'jquery',
+        'moment',
+        'noty',
+        'bootstrap',
+        'bootstrapValidator',
+        'datatables.net',
+        'datatables.net-bs',
+        'datepicker',
+        'typeahead',
+        'select2'
+    ], function ($, moment) {
+
+        $('#form').bootstrapValidator({
+            fields: {
+                deptId: {
+                    validators: {
+                        callback: {
+                            callback: function (value, validator, $field) {
+                                return validate(value, validator, $field);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        var validate = function (value, validator, $field) {
+            return !validator.getFieldElements('userid').val() || !value;
+        };
+
+        var cacheData = {};
+
+        $('.select2').select2();
+
+        $('#dept').select2Remote({
+            url: 'data/Select2.json',
+            templateSelection: function (repo) {
+                $('#deptId').val(repo.id || '').change();
+                return repo.id || repo.text;
+            }
+        });
+
+        $('#userid').typeahead({
+            items: 10,
+            source: function (query, process) {
+                $.post('data/Select2.json', {query: query}, function (result) {
+                    var items = result.data;
+                    process(items);
+                });
+            },
+            displayText: function (item) {
+                return item.id + ' - ' + item.text;
+            },
+            highlighter: function (item) {
+                var markup = '<div class="text-success">{:text}</div>';
+                return markup.replace(new RegExp('\\{:text\\}', 'gm'), item);
+            },
+            afterSelect: function (item) {
+                this.$element.val(item.id);
+                $('#username').val(item.text);
+            }
+        }).on('change', function () {
+            $('#username').val('');
+        });
+
+        var $table = $('#table').DataTable({
+            ajax: {
+                url: 'data/DataTable.json',
+                data: function () {
+                    return $('#form').serialize();
+                },
+                dataSrc: function (result) {
+                    return result.data;
+                }
+            },
+            columns: [
+                {
+                    data: null,
+                    sortable: false,
+                    searchable: false,
+                    render: function (data, type, row, meta) {
+                        return Base.formatObject('<input id="checkAll" type="checkbox" value="{id}">', data);
+                    }
+                },
+                {
+                    data: null,
+                    sortable: false,
+                    searchable: false,
+                    width: '5%',
+                    className: 'text-right',
+                    render: function (data, type, row, meta) {
+                        return (meta.row + 1);
+                    }
+                },
+                {data: 'id'},
+                {data: 'username'},
+                {data: 'dept'},
+                {data: 'birthday'},
+                {
+                    data: 'createDate',
+                    render: function (data, type, row, meta) {
+                        return moment(data, 'YYYY-MM-DD hh:mm:ss').format('YYYY/MM/DD');
+                    }
+                },
+                {
+                    data: 'remark',
+                    width: '10%',
+                    className: 'dt-nowrap'
+                },
+                {
+                    data: null,
+                    sortable: false,
+                    searchable: false,
+                    width: '10%',
+                    render: function (data, type, row, meta) {
+                        return Base.formatObject($('#template').html(), data);
+                    }
+                }
+            ],
+            columnDefs: [
+                {
+                    targets: [7],
+                    createdCell: function (td, cellData, rowData, row, col) {
+                        $(td).attr({'data-toggle': 'tooltip', 'title': cellData});
+                    }
+                }
+            ],
+            rowCallback: function (row, data, index) {
+                if (index % 2 == 0) {
+                    $(row).addClass('text-danger');
+                }
+            }
+        });
+
+
+        $table.column(1).data().sort().each(function (value, index) {
+            console.log(value, index);
+        });
+
+        $('#checkAll').click(function () {
+            $(this).closest('table').find(':checkbox').prop('checked', $(this).prop('checked'));
+        });
+
+        $table.on('click', 'tbody td:first-child', function () {
+            var $checkbox = $(this).closest('tbody').find(':checkbox');
+            $('#checkAll').prop('checked', $checkbox.length == $checkbox.filter(':checked').length);
+        });
+
+        $('#btnQuery').click(function () {
+
+            cacheData = $('#form').serializeObject();
+            console.info('$(form).serializeObject() => resultType: ' + typeof(cacheData) + ', resultValue: ' + cacheData);
+
+            var str = $.param(cacheData);  // 将对象或数组序列化为Ajax请求使用的字符串
+            console.info('$.param(obj) => resultType: ' + typeof(str) + ', resultValue: ' + str);
+
+            var json = JSON.stringify(cacheData); // 将对象或数组转成JSON字符串
+            console.info('JSON.stringify(value) => resultType: ' + typeof(json) + ', resultValue: ' + json);
+
+            var obj = JSON.parse(json);
+            console.info('JSON.parse(json) => resultType: ' + typeof(obj) + ', resultValue: ' + obj);
+
+            obj = $.parseJSON(json);
+            console.info('$.parseJSON(json) => resultType: ' + typeof(obj) + ', resultValue: ' + obj);
+
+            var $form = $(this).closest('form');
+            $.ajax({
+                url: 'data/DataTable.json',
+                data: $form.serialize(),
+                dataType: 'json',
+                success: function (result) {
+                    if ($table.data().length > 0) {
+                        $table.clear().draw();
+                    }
+                    $table.rows.add(result.data).draw();
+                }
+            });
+        });
+
+        fnDelete = function (id) {
+            $.confirm('确认删除吗？', function (yes) {
+                if (yes) {
+                    $.message(Base.format('id={0} 的记录已被成功删除！', id), true);
+                } else {
+                    $.message('操作已取消！', false);
+                }
+            });
+        };
+
+    });
+
+</script>
+</body>
+</html>

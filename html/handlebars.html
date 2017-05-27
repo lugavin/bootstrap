@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>handlebars</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Handlebars内置的模板标签</h1>
+
+    <div class="text-danger h4">一、{{name}}(用于直接输出与键名匹配的值)</div>
+    <pre>
+        var source = 'Hello {{name}}';
+        var template = Handlebars.compile(source);
+        var context = {name: 'Handlebars'};
+        var html = template(context);
+        console.info(html) = Hello Handlebars
+    </pre>
+
+    <div class="text-danger h4">二、{{{name}}}({{name}}输出会将特殊字符转义,如果想保持内容原样输出可以使用{{{}}})</div>
+    <pre>
+        var source = 'Hello {{{name}}}';
+        var template = Handlebars.compile(source);
+        var context = {name: '&lt;strong&gt;Handlebars&lt;/strong&gt;'};
+        var html = template(context);
+        console.info(html) = Hello &lt;strong&gt;Handlebars&lt;/strong&gt;
+    </pre>
+
+    <div class="text-danger h4">三、{{!comments}} OR {{!--comments--}}(!表示注释,注释后不会渲染输出任何内容)</div>
+
+    <div class="text-danger h4"><p>四、{{#keyName}}{{/keyName}}(根据当前上下文中的键值进行一次或多次渲染)</p>
+        <small>
+            注意：(1)当{{#keyName}}{{/keyName}}中的keyName值为null,undefined,false时不渲染输出任何内容;<br>&emsp;&emsp;&nbsp;
+            (2){{^keyName}}{{/keyName}}为其反向语法,即当keyName值为null,undefined,false时才渲染输出区块内容.
+        </small>
+    </div>
+    <pre>
+        var source = '{{#list}}{{language}}{{/list}}';
+        var template = Handlebars.compile(source);
+        var context = {list: [{id: 10, language: 'Java'}, {id: 20, language: 'Go'}, {id: 30, language: 'Swift'}]};
+        var html = template(context);
+        console.info(html) = JavaGoSwift
+    </pre>
+
+    <div class="text-danger h4">五、{{.}}(表示枚举,可以循环输出整个数组)</div>
+    <pre>
+        var source = '&lt;ul&gt;{{#.}}&lt;li&gt;{{id}}_{{language}}&lt;/li&gt;{{/.}}&lt;ul&gt;';
+        var template = Handlebars.compile(source);
+        var context = [{id: 10, language: 'Java'}, {id: 20, language: 'Go'}, {id: 30, language: 'Swift'}];
+        var html = template(context);
+        console.info(html) => &lt;ul&gt;&lt;li&gt;10_Java&lt;/li&gt;&lt;li&gt;20_Go&lt;/li&gt;&lt;li&gt;30_Swift&lt;/li&gt;&lt;ul&gt;
+    </pre>
+
+    <div class="text-danger h4">六、{{#each keyName}}{{/each}}(遍历列表内容,用this引用遍历的元素)</div>
+    <pre>
+        var source = '{{#each list}}{{this.language}}{{/each}}';
+        var template = Handlebars.compile(source);
+        var context = {list: [{id: 10, language: 'Java'}, {id: 20, language: 'Go'}, {id: 30, language: 'Swift'}]};
+        var html = template(context);
+        console.info(html) => JavaGoSwift
+    </pre>
+
+    <div class="text-danger h4">七、{{#if}}{{else}}{{/if}}({{#unless}}{{else}}{{/unless}}为反向语法)</div>
+    <pre>
+        var source = '{{#if list}}{{list.length}}{{/if}}';
+        var template = Handlebars.compile(source);
+        var context = {list: ['Java', 'Go', 'Swift']};
+        var html = template(context);
+        console.info(html) => 3
+    </pre>
+
+    <div class="text-danger h4">八、{{#with}}{{/with}}</div>
+    <pre>
+        var source = '{{success}} {{#with data}}{{id}}{{/with}}';
+        var template = Handlebars.compile(source);
+        var context = {success: true, code: null, msg: null, data: {id: 101, name: 'Alan'}};
+        var html = template(context);
+        console.info(html) => true 101
+    </pre>
+
+    <div class="text-danger h4">九、自定义helper</div>
+    <pre>
+        Handlebars.registerHelper('list', function (items, options) {
+            var out = '&lt;ul&gt;';
+            for (var i = 0, l = items.length; i < l; i++) {
+                out = out + '&lt;li&gt;' + options.fn(items[i]) + '&lt;/li&gt;';
+            }
+            return out + '&lt;/ul&gt;';
+        });
+        var source = '{{#list data}}{{id}}_{{name}}{{/list}}';
+        var template = Handlebars.compile(source);
+        var context = {data: [{id: 101, name: 'Alan'}, {id: 101, name: 'Ann'}]};
+        var html = template(context);
+        console.info(html) => &lt;ul&gt;&lt;li&gt;101_Alan&lt;/li&gt;&lt;li&gt;102_Ann&lt;/li&gt;&lt;/ul&gt;
+    </pre>
+</div>
+<script id="template" type="text/x-handlebars-template">
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">{{title}}</div>
+                <div class="modal-body">{{message}}</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-sm btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'handlebars',
+        'bootstrap'
+    ], function ($, Handlebars) {
+
+        // var generateId = function () {
+        //     return new Date().getTime() * Math.floor(Math.random() * 1000000);
+        // };
+        // var source = $('#template').html();
+        // var template = Handlebars.compile(source);
+        // var context = {title: '提示消息', message: '消息内容'};
+        // var html = template(context);
+        // $(html).modal({
+        //     backdrop: 'static',
+        //     show: true
+        // }).on('hidden.bs.modal', function () {
+        //     $(this).remove();
+        // });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap Fileinput</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="container">
+    <form enctype="multipart/form-data">
+        <label>Files Upload</label>
+        <input id="upload" name="files[]" type="file" multiple="multiple" class="file-loading">
+    </form>
+</div>
+</body>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+    require([
+        'jquery',
+        'bootstrap',
+        'fileinput',
+        'colorbox'
+    ], function ($) {
+
+        $('#upload').fileinput({
+            uploadUrl: '#',
+            uploadAsync: true,
+            minFileCount: 1,
+            maxFileCount: 5,
+            language: 'zh-TW',
+            showPreview: true,
+            showCaption: true,
+            overwriteInitial: true,
+            allowedFileExtensions: ['jpg', 'png', 'gif'],
+            initialPreview: [
+                '<a class="gallery" href="assets/img/gallery/photo1.jpg"><img style="height:160px" src="assets/img/gallery/photo1.jpg"></a>',
+                '<a class="gallery" href="assets/img/gallery/photo2.jpg"><img style="height:160px" src="assets/img/gallery/photo2.jpg"></a>',
+                '<a class="gallery" href="assets/img/gallery/photo3.jpg"><img style="height:160px" src="assets/img/gallery/photo3.jpg"></a>'
+            ],
+            initialPreviewConfig: [
+                {caption: 'photo1.jpg', width: '120px', url: '#', key: 1},
+                {caption: 'photo2.jpg', width: '120px', url: '#', key: 2},
+                {caption: 'photo3.jpg', width: '120px', url: '#', key: 2}
+            ],
+            uploadExtraData: {
+                img_key: 'extra_data_key',
+                img_keywords: 'extra_data_keywords'
+            }
+        });
+
+        $('.gallery').colorbox({
+            rel: 'gallery',
+            transition: 'elastic'
+        });
+
+    });
+</script>
+</html>

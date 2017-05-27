@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bootstrap-dataTables</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="container-fluid">
+    <form id="form" action="#" method="post" class="form-horizontal form-group-sm">
+        <fieldset class="bs-content" data-content="查询条件">
+            <div class="form-group">
+                <label class="control-label col-sm-1" for="userid">用户ID：</label>
+                <div class="col-sm-3">
+                    <select id="userid" name="userid" data-tags="false" class="form-control select2"></select>
+                </div>
+                <label class="control-label col-sm-1" for="username">用户名：</label>
+                <div class="col-sm-3">
+                    <select id="username" name="username" data-tags="false" class="form-control"></select>
+                </div>
+                <label class="control-label col-sm-1" for="dept">所属部门：</label>
+                <div class="col-sm-3">
+                    <select id="dept" name="dept" data-tags="false" class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-1" for="birthdayStart">出生日期：</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input id="birthdayStart" name="birthdayStart" type="text" class="input-sm form-control" data-provide="datepicker">
+                        <span class="input-group-addon"><i class="fa fa-exchange"></i></span>
+                        <input id="birthdayEnd" name="birthdayEnd" type="text" class="input-sm form-control" data-provide="datepicker">
+                    </div>
+                </div>
+                <label class="control-label col-sm-1" for="createStartDate">创建日期：</label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <input id="createStartDate" name="createStartDate" type="text" class="input-sm form-control" data-provide="datepicker">
+                        <span class="input-group-addon"><i class="fa fa-exchange"></i></span>
+                        <input id="createEndDate" name="createEndDate" type="text" class="input-sm form-control" data-provide="datepicker">
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="text-center">
+            <!-- 一定要指明type属性的值(否则可能向服务端发送两次请求) -->
+            <button id="btnQuery" type="button" class="btn btn-sm btn-primary">
+                <i class="glyphicon glyphicon-search"></i> 查询
+            </button>
+            <button id="btnReset" type="reset" class="btn btn-sm btn-default">
+                <i class="glyphicon glyphicon-refresh"></i> 重置
+            </button>
+        </div>
+    </form>
+    <div class="bs-content" data-content="数据列表">
+        <table id="table" class="table table-bordered table-striped table-hover table-condensed" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>用戶ID</th>
+                    <th>用户名</th>
+                    <th>所属部门</th>
+                    <th>出生日期</th>
+                    <th>创建日期</th>
+                    <th width="10%">操作</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<script id="actionTemplate" type="text/html">
+    <div class="dropdown">
+        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            詳細 <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu pull-right" role="menu">
+            <li><a href="javascript:void(0)">查看</a></li>
+            <li><a href="javascript:void(0)" onclick="fnUpdate('{id}')">更新</a></li>
+            <li><a href="javascript:void(0)" onclick="fnDelete('{id}')">删除</a></li>
+            <li><a href="javascript:void(0)">日誌</a></li>
+        </ul>
+    </div>
+</script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script>
+    require([
+        'jquery',
+        'bootstrap',
+        'datatables.net',
+        'datatables.net-bs',
+        'datepicker',
+        'select2',
+        'noty'
+    ], function ($) {
+
+        $('.select2').select2();
+
+        var $table = $('#table').DataTable({
+            columns : [
+                {'data': 'id'},
+                {'data': 'username'},
+                {'data': 'dept'},
+                {'data': 'birthday'},
+                {'data': 'createDate'},
+                {
+                    data: null,
+                    orderable: false,
+                    render: function (data, type, row) {
+                        return Base.formatObject($('#actionTemplate').html(), data);
+                    }
+                }
+            ]
+        });
+
+        $('#userid, #username').select2({
+            ajax: {
+                url: 'data/Select2.json',
+                data: function (params) {
+                    var query = {};
+                    var code = $(this).attr('data-code');
+                    if (code) {
+                        query.code = code;
+                    }
+                    if (params && params.term) {
+                        query.queryString = '%' + params.term + '%';
+                    }
+                    return query;
+                },
+                processResults: function (result) {
+                    var data = {results: []};
+                    $.each(result.data, function (index, obj) {
+                        data.results.push({id: obj.id, text: obj.text});
+                    });
+                    return data;
+                }
+            }
+        });
+
+        $('#dept').select2Remote({
+            url: 'data/Select2.json',
+            data: function (params) {
+                return {keyword: params.term};
+            },
+            processResults: function (result, params) {
+                return {results: result.data};
+            }
+        });
+
+        $('#btnQuery').click(function () {
+            var $btn = $(this).button('loading');
+            $.ajax({
+                url: 'data/DataTable.json',
+                data: $('#form').serialize(),
+                dataType: 'JSON',
+                success: function (result) {
+                    if ($table.data().length > 0) {
+                        $table.clear().draw();
+                    }
+                    $table.rows.add(result.data).draw();
+                },
+                complete: function () {
+                    $btn.button('reset');
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

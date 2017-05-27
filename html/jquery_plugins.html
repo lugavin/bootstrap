@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>jQuery</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <style>
+        @media (min-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 50px;
+                bottom: 0;
+                left: 0;
+                width: 220px;
+                z-index: 99;
+                display: block;
+                padding: 0;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
+            .main-content {
+                position: inherit;
+                margin-left: 220px;
+                border-left: 1px solid #e5e5e5;
+                width: calc(100vw - 221px);
+                height: calc(100vh - 70px);
+            }
+        }
+
+        #wrapper {
+            width: 100%;
+        }
+
+        #page-wrapper {
+            margin-top: 50px;
+        }
+
+        .form-control.has-error {
+            border-color: #a94442;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        }
+
+        .form-control.has-success {
+            border-color: #3c763d;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+        }
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <nav class="nav navbar-fixed-top navbar-default" role="navigation">
+        <button type="button" class="navbar-toggle pull-left" data-toggle="collapse" data-target="#sidebar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <div class="navbar-header">
+            <a href="#" class="navbar-brand">
+                <small><i class="fa fa-bold"></i> Project name</small>
+            </a>
+        </div>
+        <div id="sidebar" class="collapse navbar-collapse sidebar" role="navigation">
+            <ul id="menu" class="menu"></ul>
+        </div>
+    </nav>
+    <div id="page-wrapper">
+        <div class="main-content">
+            <ul id="tabs" class="nav nav-tabs" role="tablist">
+                <li role="presentation">
+                    <a href="#validator" aria-controls="validator" role="tab" data-toggle="tab">Validator</a>
+                </li>
+                <li role="presentation">
+                    <a href="#plugin" aria-controls="menu" role="tab" data-toggle="tab">Plugin</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="validator" class="tab-pane" role="tabpanel">
+                    <div class="container-fluid">
+                        <form id="validatorForm" method="post" class="form-horizontal form-group-sm">
+                            <fieldset>
+                                <legend>
+                                    <label class="h4">jQuery Validator</label>
+                                    <label class="h4 pull-right">
+                                        <small>jQuery-Validator-001</small>
+                                    </label>
+                                </legend>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="username">Username</label>
+
+                                    <div class="col-sm-4">
+                                        <input id="username" name="username" type="text" class="form-control"
+                                               placeholder="Username"
+                                               data-bv-notempty="true">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="password">Password</label>
+
+                                    <div class="col-sm-4">
+                                        <input id="password" name="password" type="password" class="form-control"
+                                               placeholder="Password"
+                                               data-bv-regexp="[a-zA-Z0-9_]+"
+                                               data-bv-regexp-message="Please enter a value matching the pattern">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-10 col-sm-offset-2">
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="glyphicon glyphicon-saved"></i> Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+                <div id="plugin" class="tab-pane" role="tabpanel">
+                    <i class="fa fa-spinner fa-spin fa-2x"></i> Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="nav navbar-fixed-bottom navbar-inverse">
+        <div class="text-center">
+            <address class="navbar-link" style="display: inline;">
+                <small>Copyright © 2016 Bootstrap All Rights Reserved</small>
+            </address>
+        </div>
+    </footer>
+</div>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script type="text/javascript">
+
+    // 匿名函数创建闭包
+    // (function (root, factory, plugin) {
+    //     factory(root.jQuery, plugin);
+    // })(window, function ($, plugin) {
+    //     var defaults = {};
+    //     $.fn[plugin] = function (options) {
+    //         $.extend(this, defaults, options);
+    //         console.info(this);
+    //     };
+    // }, 'validator');
+
+    // (function (factory) {
+    //     if (typeof define === "function" && define.amd) {
+    //         // AMD. Register as an anonymous module.
+    //         define(["jquery"], factory);
+    //     } else {
+    //         // Browser globals
+    //         factory(jQuery);
+    //     }
+    // }(function ($) {
+    //     console.info($);
+    // }));
+
+    require([
+        'jquery',
+        'bootstrap'
+    ], function ($) {
+
+
+        // 匿名函数创建闭包
+        (function (root, factory, plugin) {
+
+            factory(root.jQuery, plugin);
+
+        })(window, function ($, plugin) {
+
+            var __prototype__ = {
+                validate: function () {
+                    return this.$fields.trigger(this['trigger']).filter('.has-error').length > 0;
+                }
+            };
+
+            var __validators__ = {
+                notempty: function () {
+                    return this.val() != '';
+                },
+                regexp: function () {
+                    return new RegExp(this.data('bv-regexp')).test(this.val());
+                }
+            };
+
+            $.fn[plugin] = function (options) {
+
+                $.extend(this, this[plugin].defaults, options, __prototype__);
+
+                var $target = this; // $('#form').validator() => this = $('#form')
+
+                $target.$fields = $target.find(':input').not(String($target['excluded']));
+                $target.$fields.on($target['trigger'], function () {
+                    var $field = $(this);   // $(this) = $(':input')
+                    $field.next().remove();
+                    $field.removeClass('has-success has-error');
+                    var isSuccess = true;
+                    $.each(__validators__, function (validator, func) {
+                        if ($field.data('bv-' + validator)) {
+                            isSuccess = func.call($field);
+                            if (!isSuccess) {
+                                $field.after('<small class="text-danger">' + ($field.data('bv-' + validator + '-message') || $target['message']) + '</small>');
+                                return false;
+                            }
+                        }
+                    });
+                    $field.addClass(isSuccess ? 'has-success' : 'has-error');
+                });
+
+                $target.find($target['type']).on('click', function (event) {
+                    $target.validate() && event.preventDefault();
+                });
+
+            };
+
+            $.fn[plugin].defaults = {
+                excluded: [':submit,:reset,:button,:image,:file'],
+                message: 'The field is not valid',
+                type: '[type="submit"]',
+                trigger: 'keyup'
+            };
+
+        }, 'validator');
+
+        $('#validatorForm').validator({
+            message: 'The field is not valid!'
+        });
+
+    });
+</script>
+</body>
+</html>

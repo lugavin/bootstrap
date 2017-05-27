@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bootstrap-plugins</title>
+    <link rel="stylesheet" href="assets/css/app.css">
+    <style type="text/css">
+        div.tab-pane {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <form id="form" method="post" class="form-horizontal form-group-sm">
+        <fieldset>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" href="#collapse1">
+                        <h3 class="panel-title">标签页<i class="fa fa-arrow"></i></h3>
+                    </a>
+                </div>
+                <div id="collapse1" class="panel-body panel-collapse collapse in">
+                    <ul id="tabs" class="nav nav-tabs" role="tablist">
+                        <li role="presentation">
+                            <a href="#tab1" aria-controls="tab1" role="tab" data-toggle="tab"
+                               data-href="html/bootstrap_fontAwesome.html" data-type="iframe">Home</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#tab2" aria-controls="tab2" role="tab" data-toggle="tab"
+                               data-href="html/jquery_wrap.html" data-type="ajax">Profile</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#tab3" aria-controls="tab3" role="tab" data-toggle="tab"
+                               data-href="">Messages</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#tab4" aria-controls="tab4" role="tab" data-toggle="tab"
+                               data-href="">Settings</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="tab1" class="tab-pane" role="tabpanel">
+                            <i class="fa fa-spinner fa-spin fa-2x"></i> Loading...
+                        </div>
+                        <div id="tab2" class="tab-pane" role="tabpanel">
+                            <i class="fa fa-spinner fa-spin fa-2x"></i> Loading...
+                        </div>
+                        <div id="tab3" class="tab-pane" role="tabpanel">
+                            <i class="fa fa-spinner fa-spin fa-2x"></i> Loading...
+                        </div>
+                        <div id="tab4" class="tab-pane" role="tabpanel">
+                            <i class="fa fa-spinner fa-spin fa-2x"></i> Loading...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal">
+                    <i class="glyphicon glyphicon-open"></i> Modal
+                </button>
+                <button id="btnModal" type="button" class="btn btn-default btn-sm">
+                    <i class="glyphicon glyphicon-open"></i> Modal(Clone)
+                </button>
+                <button id="btnDialog" type="button" class="btn btn-default btn-sm">
+                    <i class="glyphicon glyphicon-open"></i> Dialog
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="tooltip on top">
+                    Tooltip on top
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="popover" data-placement="top" title="Dismissible popover" data-content="And here's some amazing content.">
+                    Popover on top
+                </button>
+                <button id="btnLoad" type="button" class="btn btn-primary btn-sm" data-loading-text="<i class='fa fa-spinner fa-spin'></i> Loading...">
+                    Loading
+                </button>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+<div id="modal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <label class="modal-title"><i class="fa fa-spinner fa-spin fa-lg"></i> Loading...</label>
+            </div>
+            <div class="modal-body">
+                <h5>Loading...</h5>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" style="width: 100%"></div>
+                </div>
+                <iframe class="embed-responsive-item" frameborder="0" src="" style="width:100%;height:50vh;display:block;"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-primary">
+                    <i class="fa fa-key"></i> 授权
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="template" type="text/template">
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">{{title}}</div>
+                <div class="modal-body">{{message}}</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-sm btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'nprogress',
+        'handlebars',
+        'bootstrap'
+    ], function ($, NProgress, Handlebars) {
+
+        var template = Handlebars.compile($('#template').html());
+
+        $('#tabs').find('a[data-toggle="tab"]').click(function (e) {
+            e.preventDefault();
+            var $target = $(this);
+            var url = $target.data('href');
+            var tab = $target.attr('href');
+            // 判斷是否為第一次加載
+            if (!$target.data('active') && url) {
+                NProgress.start();
+                var $btn = $('button[data-loading-text]').button('loading');
+                if ($target.data('type') === 'iframe') {
+                    var $frame = $('<iframe class="embed-responsive-item" frameborder="0" style="width:100%;height:50vh;display:block;"></iframe>');
+                    $frame.on('load', function () {
+                        NProgress.done();
+                        $btn.button('reset');
+                    }).attr('src', url);
+                    $(tab).html($frame);
+                } else {
+                    $('<div></div>').load(url, $('#form').serialize(), function (html) {
+                        $(tab).html($(this).append(html).find('div.wrap').html());
+                        NProgress.done();
+                        $btn.button('reset');
+                    });
+                }
+                $target.data('active', true).tab('show');
+            } else {
+                $target.tab('show');
+            }
+        });
+
+        $('#btnLoad').click(function () {
+            // 清除所有tab綁定的數據
+            var $tab = $('#tabs').find('a[data-toggle="tab"]').data('active', false);
+            var li = $tab.parent('li.active').get(0);
+            if (li) {
+                $(li).children(':first').trigger('click');
+            } else {
+                // 設置默認顯示的tab頁
+                $tab.filter(':first').trigger('click');
+            }
+        });
+
+        $('#btnModal').click(function () {
+            var $clone = $('#modal').clone(true).removeAttr('id').insertBefore('#modal').modal({
+                show: true
+            }).on('hidden.bs.modal', function () {
+                $(this).remove();
+            });
+            $clone.find('iframe').on('load', function () {
+                $(this).siblings().fadeOut('slow', function () {
+                    $(this).remove();
+                });
+            }).attr('src', 'html/bootstrap_plugins.html');
+        });
+
+        $('#btnDialog').click(function () {
+            $(template({
+                title: '确认对话框',
+                message: '消息内容'
+            })).modal('show').on('hidden.bs.modal', function () {
+                $(this).remove();
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

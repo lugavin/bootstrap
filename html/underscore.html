@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>underscore</title>
+</head>
+<body>
+<template id="template1">Hello {{name}}!</template>
+<script id="template2" type="text/template">Hello {{name}}!</script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/require.js"></script>
+<script type="text/javascript">
+    require([
+        'jquery',
+        'underscore'
+    ], function ($, underscore) {
+
+        var generateId = function () {
+            return new Date().getTime() * Math.floor(Math.random() * 1000000);
+        };
+
+        underscore.templateSettings = {interpolate: /{{(.+?)}}/g};
+
+        var template1 = underscore.template($('#template1').html());
+
+        console.info(template1({name: 'template1 => underscore'}));
+
+        var template2 = underscore.template($('#template2').html());
+
+        console.info(template2({name: 'template2 => underscore'}));
+
+    });
+</script>
+</body>
+</html>
