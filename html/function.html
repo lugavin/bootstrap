@@ -9,7 +9,37 @@
 </head>
 <body>
 <div class="container">
+    <pre>
+        var Clazz = function() {
+            // 用var定义类的private属性和private方法
+            var name = "声明一个类";
+            var print = function() {
+                console.info(name);
+            };
+            // 用this定义类的public属性和public方法
+            this.name = name;
+            this.print = function() {
+                console.info(this.name);
+            };
+        };
 
+        Clazz.staticMethod = function() {
+            console.info("声明类的静态方法");
+        };
+
+        Clazz.prototype.instanceMethod = function() {
+            // 声明实例方法需要使用prototype原型属性
+            console.info("声明类的实例方法");
+        };
+
+        // 静态方法调用
+        Clazz.staticMethod();
+
+        // 实例方法调用(需要先实例化)
+        new Clazz().instanceMethod();
+        // 用这种方法，类就是一个对象，不是函数
+        Object.create(Clazz.prototype).instanceMethod();
+    </pre>
 </div>
 <script type="text/javascript">
 
@@ -97,6 +127,37 @@
     })(window);
 
     console.info('String.prototype.format --> ', 'Hello {0}!'.format('JS'));
+
+    //============================ JS类与对象 ============================//
+
+    var Clazz = function () {
+        // 用var定义类的private属性和private方法
+        var name = "声明一个类";
+        var print = function () {
+            console.info(name);
+        };
+        // 用this定义类的public属性和public方法
+        this.name = name;
+        this.print = print;
+    };
+
+    Clazz.staticMethod = function () {
+        console.info("声明类的静态方法");
+    };
+
+    Clazz.prototype.instanceMethod = function () {
+        // 声明实例方法需要使用prototype原型属性
+        console.info("声明类的实例方法");
+    };
+
+    // 静态方法调用
+    Clazz.staticMethod();
+
+    // 实例方法调用(需要先实例化)
+    new Clazz().instanceMethod();
+    Object.create(Clazz.prototype).instanceMethod();
+
+    //============================ JS类与对象 ============================//
 
 </script>
 </body>
