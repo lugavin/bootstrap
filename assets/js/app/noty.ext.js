@@ -1,132 +1,89 @@
 define([
-    'jquery',
-    'noty'
-], function ($, noty) {
+    'Noty'
+], function (Noty) {
 
-    $.extend($.noty.defaults, {
-        layout: 'bottomRight',  // top(Left|Center|Right) center(Left|Right) bottom(Left|Center|Right)
-        theme: 'relax',         // defaultTheme|bootstrapTheme|relax
-        type: 'success',        // alert|success|error|warning|information|confirmation
-        text: '',               // can be html or string
-        dismissQueue: true,     // If you want to use queue feature set this true
+    Noty.overrideDefaults({
+        layout: 'topRight',     // top(Left|Center|Right) center(Left|Right) bottom(Left|Center|Right)
+        theme: 'relax',         // relax|mint|metrou
+        type: 'success',        // alert|success|error|warning|info
         timeout: false,         // delay for closing event. Set false for sticky notifications
         force: false,           // adds notification to the beginning of queue when set to true
         modal: false,           // modal dialog
-        maxVisible: 5,          // you can set max visible notification for dismissQueue true option,
         killer: true,           // for close all notifications before show
-        closeWith: ['click'],   // ['click', 'button', 'hover', 'backdrop'] // backdrop click will close all notifications
-        buttons: false          // an array of buttons
+        closeWith: ['click'],   // ['click', 'button']
+        animation: {
+            open: 'animated fadeInRight',
+            close: 'animated fadeOutRight'
+        }
     });
 
-    var methods = {
-        processing: function () {
-            return noty({
-                text: '<i class="fa fa-spinner fa-spin fa-lg"></i> Loading...',
-                type: 'alert',
-                layout: 'center',
-                modal: true,
-                closeWith: []
-            });
-        },
-        alert: function (msg, msgType, callback) {
-            var args = Array.prototype.slice.call(arguments);
-            msg = args.shift();
-            if (typeof args[args.length - 1] === 'function') {
-                callback = args.pop();
-            }
-            msgType = args.length > 0 ? args.shift() : null;
-            var title = '提示';
-            var icon = '';
-            var text = '';
-            switch (msgType) {
-                case 'success':
-                    icon = '<i class="fa fa-info-circle fa-2x"></i>';
-                    title = '成功提示';
-                    break;
-                case 'error':
-                    icon = '<i class="fa fa-times-circle fa-2x"></i>';
-                    title = '失败提示';
-                    break;
-                case 'warn':
-                    icon = '<i class="fa fa-warning fa-2x"></i>';
-                    title = '警告';
-                    break;
-                case 'question':
-                    icon = '<i class="fa fa-question-circle fa-2x"></i>';
-                    title = '确认';
-                    break;
-                default:
-                    break;
-            }
-            if (msgType) {
-                text = icon + ' <strong class="h4">' + title + ':' + msg + '</strong>';
-            } else {
-                text = '<strong class="h4">' + title + ':' + msg + '</strong>';
-            }
-            return noty({
-                text: text,
-                type: 'alert',
-                layout: 'topCenter',
-                modal: true,
-                buttons: [{
-                    addClass: 'btn btn-default btn-sm',
-                    text: '确定',
-                    onClick: function ($noty) {
-                        $noty.close();
-                        callback && callback();
-                    }
-                }]
-            });
-        },
-        confirm: function (msg, options, callback) {
-            var args = Array.prototype.slice.call(arguments);
-            msg = args.shift();
-            if (typeof args[args.length - 1] === 'function') {
-                callback = args.pop();
-            }
-            options = args.length > 0 ? args.shift() : null;
-            var icon = '<i class="fa fa-question-circle fa-2x"></i>';
-            var title = options && options['title'] ? options['title'] : '确认提示';
-            var text = icon + ' <strong class="h4">' + title + ':' + msg + '</strong>';
-            return noty({
-                text: text,
-                type: 'alert',
-                layout: 'topCenter',
-                modal: true,
-                buttons: [{
-                    addClass: 'btn btn-primary btn-sm',
-                    text: options && options['buttonOk'] ? options['buttonOk'] : '确定',
-                    onClick: function ($noty) {
-                        $noty.close();
-                        callback && callback(true);
-                    }
-                }, {
-                    addClass: 'btn btn-default btn-sm',
-                    text: options && options['buttonCancel'] ? options['buttonCancel'] : '取消',
-                    onClick: function ($noty) {
-                        $noty.close();
-                        callback && callback(false);
-                    }
-                }]
-            });
-        },
-        message: function (msg, success) {
-            if (typeof success !== 'boolean') {
-                success = true;
-            }
-            return noty({
-                text: msg,
-                type: success ? 'success' : 'error',
-                layout: 'bottomRight',
-                modal: false,
-                timeout: 0
-            });
-        }
-    };
+    Noty.alert = alert;
+    Noty.confirm = confirm;
+    Noty.message = message;
 
-    for (var key in methods) {
-        noty[key] = methods[key];
+    return Noty;
+
+    function alert(msg, type, callback) {
+
+        var args = Array.prototype.slice.call(arguments);
+        msg = args.shift();
+        if (typeof args[args.length - 1] === 'function') {
+            callback = args.pop();
+        }
+        type = args.length > 0 ? args.shift() : null;
+
+        var Type = {alert: 'alert', success: 'success', error: 'error', warning: 'warning', info: 'info'};
+        type = Type[type] || Type.alert;
+
+        var noty = new Noty({
+            text: msg,
+            type: type,
+            modal: true,
+            closeWith: [],
+            layout: 'topCenter',
+            buttons: [
+                Noty.button('确定', 'btn btn-sm btn-primary', function () {
+                    noty.close();
+                    callback && callback(true);
+                })
+            ],
+            animation: {
+                open: 'animated flipInY',
+                close: 'animated flipOutY'
+            }
+        }).show();
+
     }
 
-    return noty;
+    function confirm(msg, callback) {
+        var noty = new Noty({
+            text: msg,
+            type: 'alert',
+            modal: true,
+            closeWith: [],
+            layout: 'topCenter',
+            buttons: [
+                Noty.button('确定', 'btn btn-sm btn-primary pull-right', function () {
+                    noty.close();
+                    callback && callback(true);
+                }, {style: 'margin-left: 5px; margin-bottom: 5px;'}),
+                Noty.button('取消', 'btn btn-sm btn-default pull-right', function () {
+                    noty.close();
+                    callback && callback(false);
+                }, {style: 'margin-bottom: 5px;'})
+            ],
+            animation: {
+                open: 'animated flipInY',
+                close: 'animated flipOutY'
+            }
+        }).show();
+    }
+
+    function message(msg, type) {
+        new Noty({
+            text: msg,
+            type: type || 'success'
+        }).show();
+    }
+
 });

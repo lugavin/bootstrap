@@ -124,8 +124,7 @@
         'datatables.net',
         'datatables.net-bs',
         'datepicker',
-        'select2',
-        'noty'
+        'select2'
     ], function ($, Handlebars) {
 
         var actionTemplate = Handlebars.compile($('#actionTemplate').html());
@@ -184,13 +183,6 @@
         };
 
         fnDelete = function (id) {
-            $.confirm('确认删除吗？', function (yes) {
-                if (yes) {
-                    $.message('id=' + id + ' 的记录已被成功删除！', true);
-                } else {
-                    $.message('操作已取消！', false);
-                }
-            });
         };
 
     });

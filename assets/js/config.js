@@ -28,7 +28,7 @@ var require = {
         'easing': 'lib/jquery-easing/jquery.easing',
         'fancybox': 'lib/jquery-fancyBox/jquery.fancybox',
         'fullpage': 'lib/jquery-fullpage/jquery.fullpage',
-        'noty': 'lib/jquery-noty/packaged/jquery.noty.packaged',
+        'Noty': 'lib/noty/noty',
         'nprogress': 'lib/nprogress/nprogress',
         'select2': 'lib/jquery-select2/jquery.select2.full',
         'ztree': 'lib/jquery-ztree/jquery.ztree.all',
@@ -139,7 +139,7 @@ var require = {
             'jquery': 'app/jquery.ext',
             'select2': 'app/select2.ext',
             'datatables.net': 'app/datatables.ext',
-            'noty': 'app/noty.ext',
+            'Noty': 'app/noty.ext',
             'datepicker': 'app/datepicker.ext'
         },
         'app/jquery.ext': {
@@ -152,7 +152,7 @@ var require = {
             'datatables.net': 'datatables.net'
         },
         'app/noty.ext': {
-            'noty': 'noty'
+            'Noty': 'Noty'
         },
         'app/datepicker.ext': {
             'datepicker': 'datepicker'
