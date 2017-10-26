@@ -178,7 +178,8 @@
                         <li><a href="#"><i class="ace-icon fa fa-cog"></i> Settings</a></li>
                         <li><a href="#"><i class="ace-icon fa fa-user"></i> Profile</a></li>
                         <li class="divider"></li>
-                        <li><a id="logout" href="javascript:void(0)"><i class="ace-icon fa fa-power-off"></i> Logout</a></li>
+                        <li><a id="logout" href="javascript:void(0)"><i class="ace-icon fa fa-power-off"></i> Logout</a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -215,6 +216,10 @@ CommonJS VS AMD
         'bootstrap',
         'treeMenu'
     ], function ($, NProgress) {
+
+        window.addEventListener('message', function (event) {
+            console.log('%c%s', 'color: #a94442; font-weight: bold;', event.data);
+        }, false);
 
         $('#treeMenu').treeMenu({
             url: 'data/Tree.json',
